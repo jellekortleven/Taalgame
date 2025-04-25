@@ -38,12 +38,29 @@ function kiesSnelheid(s) {
   event.target.disabled = true;
 }
 
+let usedLeftPositions = [];
+
 function createWord(word, side, index) {
   const div = document.createElement('div');
   div.className = 'word';
   div.textContent = word;
   div.dataset.index = index;
-  div.style.left = `${Math.random() * 80 + 10}%`;
+
+  const maxColumns = 6;
+  if (usedLeftPositions.length >= maxColumns) {
+    usedLeftPositions = [];
+  }
+
+  let column;
+  do {
+    column = Math.floor(Math.random() * maxColumns);
+  } while (usedLeftPositions.includes(column));
+
+  usedLeftPositions.push(column);
+
+  const leftPercent = 10 + column * (80 / maxColumns);
+  div.style.left = `${leftPercent}%`;
+
   div.style.animationDuration = valTijden[snelheid];
   div.addEventListener('click', () => selectWord(side, div));
   div.addEventListener('animationend', () => {
