@@ -83,7 +83,7 @@ body {
 .word {
   position: absolute;
   padding: 12px 18px;
-  margin: 20px; /* Voeg deze regel toe voor extra ruimte tussen woorden */
+  margin: 20px 40px; /* Voeg deze regel toe voor extra ruimte tussen woorden */
   background-color: #fff9c4;
   border-radius: 20px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.2);
