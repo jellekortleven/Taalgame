@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Taalspel Woordenmatch</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="taalkeuze">
+    <h2>Kies een taal:</h2>
+    <button onclick="kiesTaal('engels')">Engels</button>
+    <button onclick="kiesTaal('frans')">Frans</button>
+    <button onclick="kiesTaal('duits')">Duits</button>
+
+    <div id="snelheidskeuze" style="margin-top: 20px;">
+      <h3>Kies snelheid:</h3>
+      <button onclick="kiesSnelheid('traag')">🐢 Traag</button>
+      <button onclick="kiesSnelheid('gewoon')" disabled>🚶 Gewoon</button>
+      <button onclick="kiesSnelheid('snel')">🏃 Snel</button>
+    </div>
+  </div>
+
+  <div class="half" id="left"></div>
+  <div class="half" id="right"></div>
+
+  <div id="scoreboard">
+    <span>Score: <span id="score">0</span></span>
+    <button onclick="resetSpel()">🔁 Reset</button>
+    <button onclick="naarHome()">🏠 Home</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
