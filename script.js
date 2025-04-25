@@ -50,52 +50,53 @@ function startGame() {
   shuffleArray(leftWords);
   shuffleArray(rightWords);
 
-  const delayBetweenWords = 500;
-  const leftSchedule = makeWordSchedule(leftWords, 'left', delayBetweenWords);
-  const rightSchedule = makeWordSchedule(rightWords, 'right', delayBetweenWords);
+  const leftSchedule = scheduleWords(leftWords, 'left');
+  const rightSchedule = scheduleWords(rightWords, 'right');
 
-  leftSchedule.forEach(({ wordObj, delay }) => {
+  leftSchedule.forEach(({ wordObj, delay, column }) => {
     setTimeout(() => {
-      const wordDiv = createWord(wordObj.word, 'left', wordObj.index);
+      const wordDiv = createWord(wordObj.word, 'left', wordObj.index, column);
       left.appendChild(wordDiv);
     }, delay);
   });
 
-  rightSchedule.forEach(({ wordObj, delay }) => {
+  rightSchedule.forEach(({ wordObj, delay, column }) => {
     setTimeout(() => {
-      const wordDiv = createWord(wordObj.word, 'right', wordObj.index);
+      const wordDiv = createWord(wordObj.word, 'right', wordObj.index, column);
       right.appendChild(wordDiv);
     }, delay);
   });
 }
 
-function makeWordSchedule(wordList, side, baseDelay) {
+function scheduleWords(wordList, side) {
   const maxColumns = 6;
-  const columnStatus = new Array(maxColumns).fill(0); // houdt tijd bij per kolom
-  const scheduled = [];
+  const columnTimers = new Array(maxColumns).fill(0); // Tijd beschikbaar per kolom
+  const spacing = 1000; // minimaal 1 seconde tussen woorden in dezelfde kolom
+  const duration = valTijden[snelheid];
 
-  wordList.forEach(wordObj => {
-    // Zoek eerste vrije kolom
+  const result = [];
+
+  wordList.forEach((wordObj, i) => {
     let chosenColumn = 0;
-    let earliest = columnStatus[0];
-    for (let i = 1; i < maxColumns; i++) {
-      if (columnStatus[i] < earliest) {
-        earliest = columnStatus[i];
-        chosenColumn = i;
+    let earliestTime = columnTimers[0];
+
+    for (let col = 1; col < maxColumns; col++) {
+      if (columnTimers[col] < earliestTime) {
+        earliestTime = columnTimers[col];
+        chosenColumn = col;
       }
     }
 
-    // Plan woord na earliest + kleine buffer (hier 200ms)
-    const delay = columnStatus[chosenColumn] + 200;
-    columnStatus[chosenColumn] = delay + valTijden[snelheid];
-    wordObj.column = chosenColumn;
-    scheduled.push({ wordObj, delay });
+    const delay = columnTimers[chosenColumn];
+    columnTimers[chosenColumn] = delay + spacing;
+
+    result.push({ wordObj, delay: delay + i * 100, column: chosenColumn });
   });
 
-  return scheduled;
+  return result;
 }
 
-function createWord(word, side, index) {
+function createWord(word, side, index, column) {
   const div = document.createElement('div');
   div.className = 'word';
   div.textContent = word;
@@ -103,12 +104,9 @@ function createWord(word, side, index) {
 
   const maxColumns = 6;
   const columnWidth = 80 / maxColumns;
-  const offset = side === 'left' ? 10 : 10; // Begin bij 10% van zijkant
+  const baseOffset = 10;
 
-  // Haal kolom uit geplande waarde op basis van dataset (ingepland in startGame)
-  const existingWord = pairs.find(pair => pair.left === word || pair.right === word);
-  const column = existingWord && existingWord.column !== undefined ? existingWord.column : Math.floor(Math.random() * maxColumns);
-  const leftPercent = offset + column * columnWidth;
+  const leftPercent = baseOffset + column * columnWidth;
   div.style.left = `${leftPercent}%`;
 
   div.style.animationDuration = `${valTijden[snelheid]}ms`;
